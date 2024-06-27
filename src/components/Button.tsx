@@ -1,19 +1,18 @@
+import React from "react";
 import Spinner from "./Spinner";
 
-type Props = {
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
   secondary?: boolean;
   loading?: boolean;
-  className?: string;
-  onClick?: () => void;
-};
+}
 
 const Button: React.FC<Props> = ({
   text,
   secondary,
   loading,
   className,
-  onClick,
+  ...props
 }) => {
   return (
     <button
@@ -23,6 +22,7 @@ const Button: React.FC<Props> = ({
           ? "bg-myPink hover:bg-rose-700"
           : "bg-myBlue hover:bg-blue-700"
       } ${loading ? "cursor-wait" : "active:scale-90"}`}
+      {...props}
     >
       {loading && <Spinner />}
       {text}
