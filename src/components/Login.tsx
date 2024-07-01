@@ -1,27 +1,33 @@
 import React, { useState } from "react";
 import Button from "./Button";
 import Input from "./Input";
+import { FB_AuthSignIn, FB_AuthSignUp } from "../backend/queries";
+import { toastWarn } from "../utils/toast";
 
 const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const form = e.currentTarget;
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     const data = {
       email: formData.get("email") as string,
       password: formData.get("password") as string,
     };
 
     if (isLogin) {
-      // handle login data
-      console.log("Login with", data);
+      await FB_AuthSignIn(data, setLoading);
     } else {
       const confirmPassword = formData.get("password-confirm") as string;
-      if (data.password === confirmPassword) {
-        // Handle register data
-        console.log("Registering with", data);
+      if (data.password.length >= 6) {
+        if (data.password === confirmPassword) {
+          await FB_AuthSignUp(data, setLoading);
+        } else {
+          toastWarn("Passwords do not match");
+        }
       } else {
-        console.log("Passwords do not match");
+        toastWarn("Password should be at least 6 characters");
       }
     }
   };
@@ -49,7 +55,7 @@ const Login: React.FC = () => {
             required
           />
         )}
-        <Button text={isLogin ? "Login" : "Register"} />
+        <Button text={isLogin ? "Login" : "Register"} loading={loading} />
         <Button
           type="button"
           text={isLogin ? "Register" : "Cancel"}

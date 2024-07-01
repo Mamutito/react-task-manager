@@ -1,5 +1,7 @@
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
 import "./index.css";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Navigate,
   RouterProvider,
@@ -10,12 +12,13 @@ import Layout from "./pages/Layout";
 import ListPage from "./pages/ListPage";
 import ChatPage from "./pages/ChatPage";
 import ProfilePage from "./pages/ProfilePage";
-import { Provider } from "react-redux";
+
 import store from "./store/store";
+import { ToastContainer } from "react-toastify";
 
 const isAuthenticated = (): boolean => {
   // TODO: implemented signin logic
-  return true;
+  return false;
 };
 
 const ProtectedRoute = ({
@@ -62,5 +65,6 @@ const root = ReactDOM.createRoot(
 root.render(
   <Provider store={store}>
     <RouterProvider router={router} />
+    <ToastContainer position="top-center" />
   </Provider>
 );
