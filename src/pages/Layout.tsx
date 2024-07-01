@@ -1,13 +1,13 @@
-import React from "react";
 import { Outlet } from "react-router-dom";
+import Header from "../components/Header";
 
-type Props = {};
-
-const Layout = (props: Props) => {
+const Layout = () => {
   return (
-    <div>
-      hehe
-      <Outlet />
+    <div className="flex flex-col h-screen">
+      <Header />
+      <div className="bg-pattern flex-1">
+        <Outlet />
+      </div>
     </div>
   );
 };
