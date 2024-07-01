@@ -10,6 +10,8 @@ import Layout from "./pages/Layout";
 import ListPage from "./pages/ListPage";
 import ChatPage from "./pages/ChatPage";
 import ProfilePage from "./pages/ProfilePage";
+import { Provider } from "react-redux";
+import store from "./store/store";
 
 const isAuthenticated = (): boolean => {
   // TODO: implemented signin logic
@@ -57,4 +59,8 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
-root.render(<RouterProvider router={router} />);
+root.render(
+  <Provider store={store}>
+    <RouterProvider router={router} />
+  </Provider>
+);
