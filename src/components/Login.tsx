@@ -4,14 +4,14 @@ import Input from "./Input";
 import { FB_AuthSignIn, FB_AuthSignUp } from "../backend/authQueries";
 import { toastWarn } from "../utils/toast";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import { setUser } from "../store/usersSlice";
+import { useAppDispatch } from "../store/hooks";
 
 const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     const form = e.currentTarget;
     e.preventDefault();

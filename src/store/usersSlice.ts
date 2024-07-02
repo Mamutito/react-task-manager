@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
-export const defaultUser = {
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { userType } from "../types";
+export const defaultUser: userType = {
   id: "",
   isOnline: false,
   img: "",
@@ -9,15 +10,19 @@ export const defaultUser = {
   lastSeen: "",
   bio: "",
 };
-const initialState = { currentUser: defaultUser };
+
+interface UsersState {
+  currentUser: userType;
+}
+const initialState: UsersState = { currentUser: defaultUser };
 export const usersSlice = createSlice({
   initialState,
   name: "users",
   reducers: {
-    setUser: (state, action) => {
-      state.currentUser = action.payload;
+    setUser: (state, action: PayloadAction<userType | undefined>) => {
+      state.currentUser = action.payload || defaultUser;
     },
-    setUsers: (state, action) => {},
+    setUsers: (state, action: PayloadAction<userType[] | undefined>) => {},
   },
 });
 
