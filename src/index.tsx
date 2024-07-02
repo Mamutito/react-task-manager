@@ -18,7 +18,7 @@ import { ToastContainer } from "react-toastify";
 
 const isAuthenticated = (): boolean => {
   // TODO: implemented signin logic
-  return false;
+  return true;
 };
 
 const ProtectedRoute = ({

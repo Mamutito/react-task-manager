@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import Button from "./Button";
 import Input from "./Input";
-import { FB_AuthSignIn, FB_AuthSignUp } from "../backend/queries";
+import { FB_AuthSignIn, FB_AuthSignUp } from "../backend/authQueries";
 import { toastWarn } from "../utils/toast";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setUser } from "../store/usersSlice";
 
 const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     const form = e.currentTarget;
     e.preventDefault();
@@ -17,12 +22,24 @@ const Login: React.FC = () => {
     };
 
     if (isLogin) {
-      await FB_AuthSignIn(data, setLoading);
+      try {
+        const user = await FB_AuthSignIn(data, setLoading);
+        dispatch(setUser(user));
+        navigate("/dashboard");
+      } catch (error: any) {
+        //Already handled by CathErr
+      }
     } else {
       const confirmPassword = formData.get("password-confirm") as string;
       if (data.password.length >= 6) {
         if (data.password === confirmPassword) {
-          await FB_AuthSignUp(data, setLoading);
+          try {
+            const user = await FB_AuthSignUp(data, setLoading);
+            dispatch(setUser(user));
+            navigate("/dashboard");
+          } catch (error: any) {
+            //Already handled by CathErr
+          }
         } else {
           toastWarn("Passwords do not match");
         }
