@@ -83,7 +83,7 @@ const addUserToCollection = async ({
   return getUserInfo(uid);
 };
 
-const getUserInfo = async (uid: string): Promise<userType> => {
+export const getUserInfo = async (uid: string): Promise<userType> => {
   const userRef = doc(db, COLLECTIONS.USERS, uid);
   const user = await getDoc(userRef);
 

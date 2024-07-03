@@ -3,47 +3,29 @@ import { Provider } from "react-redux";
 import "./index.css";
 import "react-toastify/dist/ReactToastify.css";
 import {
+  LoaderFunction,
   Navigate,
   RouterProvider,
   createBrowserRouter,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import Layout from "./pages/Layout";
 import ListPage from "./pages/ListPage";
 import ChatPage from "./pages/ChatPage";
 import ProfilePage from "./pages/ProfilePage";
 
 import store from "./store/store";
 import { ToastContainer } from "react-toastify";
-
-const isAuthenticated = (): boolean => {
-  // TODO: implemented signin logic
-  return true;
-};
-
-const ProtectedRoute = ({
-  redirectPath = "/auth",
-}: {
-  redirectPath?: string;
-}) => {
-  if (!isAuthenticated()) {
-    return <Navigate to={redirectPath} replace />;
-  }
-  return <Layout />;
-};
+import ProtectedRoute, { authLoader } from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: isAuthenticated() ? (
-      <Navigate to="/dashboard" />
-    ) : (
-      <Navigate to="/auth" />
-    ),
+    element: <Navigate to="/dashboard" />,
   },
   {
     path: "/dashboard",
     element: <ProtectedRoute />,
+    loader: authLoader as LoaderFunction,
     children: [
       { index: true, element: <ListPage /> },
       { path: "chat", element: <ChatPage /> },

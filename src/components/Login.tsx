@@ -25,6 +25,7 @@ const Login: React.FC = () => {
       try {
         const user = await FB_AuthSignIn(data, setLoading);
         dispatch(setUser(user));
+        localStorage.setItem("currentUser", JSON.stringify(user));
         navigate("/dashboard");
       } catch (error: any) {
         //Already handled by CathErr
@@ -36,6 +37,7 @@ const Login: React.FC = () => {
           try {
             const user = await FB_AuthSignUp(data, setLoading);
             dispatch(setUser(user));
+            localStorage.setItem("currentUser", JSON.stringify(user));
             navigate("/dashboard");
           } catch (error: any) {
             //Already handled by CathErr

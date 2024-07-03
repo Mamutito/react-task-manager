@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.svg";
-import Button from "./Button";
+import HeaderButtons from "./HeaderButtons";
 
 const Header: React.FC = () => {
   return (
@@ -8,9 +8,7 @@ const Header: React.FC = () => {
       <Link to="/dashboard">
         <img src={logo} alt="check sign" className="w-16 drop-shadow-md" />
       </Link>
-      <section className="flex">
-        <Button text="Add New List Board" secondary />
-      </section>
+      <HeaderButtons />
     </header>
   );
 };
