@@ -5,7 +5,13 @@ import {
 import { auth, db } from "./firebase";
 import CatchErr from "../utils/catchErr";
 import { authDataType, setLoadingType, userType } from "../types";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { COLLECTIONS } from "../utils/constants";
 import { toastErr } from "../utils/toast";
 import { defaultUser } from "../store/usersSlice";
@@ -37,6 +43,7 @@ export const FB_AuthSignUp = async (
     setLoading(false);
   }
 };
+
 export const FB_AuthSignIn = async (
   { email, password }: authDataType,
   setLoading: setLoadingType
@@ -44,6 +51,7 @@ export const FB_AuthSignIn = async (
   setLoading(true);
   try {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
+    await updateUserInfo({ id: user.uid, isOnline: true });
     return getUserInfo(user.uid);
   } catch (error: any) {
     CatchErr(error);
@@ -95,5 +103,19 @@ const getUserInfo = async (uid: string): Promise<userType> => {
   } else {
     toastErr("getUserInfo: user not found");
     return defaultUser;
+  }
+};
+
+const updateUserInfo = async (data: Partial<userType>) => {
+  const { id, ...updateData } = data;
+  if (!id) {
+    console.error("User ID is required to update user information.");
+    return;
+  }
+  const userRef = doc(db, COLLECTIONS.USERS, id);
+  try {
+    await updateDoc(userRef, updateData);
+  } catch (error) {
+    CatchErr(error);
   }
 };
