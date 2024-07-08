@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 import { auth, db } from "./firebase";
 import CatchErr from "../utils/catchErr";
@@ -57,6 +58,16 @@ export const FB_AuthSignIn = async (
     CatchErr(error);
   } finally {
     setLoading(false);
+  }
+};
+
+export const FB_AuthSignOut = async (id: string) => {
+  try {
+    await signOut(auth);
+    await updateUserInfo({ id, isOnline: false });
+    return;
+  } catch (error: any) {
+    CatchErr(error);
   }
 };
 

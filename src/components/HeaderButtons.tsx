@@ -5,11 +5,19 @@ import React from "react";
 import Button from "./Button";
 import IconButton from "./IconButton";
 import UserProfileHeader from "./UserProfileHeader";
-import { useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { Link } from "react-router-dom";
+import { FB_AuthSignOut } from "../backend/authQueries";
+import { defaultUser, setUser } from "../store/usersSlice";
 
 const HeaderButtons: React.FC = () => {
   const user = useAppSelector((state) => state.users.currentUser);
+  const dispatch = useAppDispatch();
+  const handleSignOut = async () => {
+    await FB_AuthSignOut(user.id);
+    dispatch(setUser(defaultUser));
+    localStorage.removeItem("currentUser");
+  };
   return (
     <section className="flex flex-row-reverse justify-center gap-5 md:flex-row">
       <Button text="Add New List Board" secondary className="hidden md:flex" />
@@ -26,7 +34,11 @@ const HeaderButtons: React.FC = () => {
               </Link>
             </li>
             <li>
-              <Link className="hover:bg-gray-200 py-2 px-4 block" to="/auth">
+              <Link
+                className="hover:bg-gray-200 py-2 px-4 block"
+                to="/auth"
+                onClick={handleSignOut}
+              >
                 Logout
               </Link>
             </li>
