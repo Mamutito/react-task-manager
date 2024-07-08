@@ -24,9 +24,11 @@ const Login: React.FC = () => {
     if (isLogin) {
       try {
         const user = await FB_AuthSignIn(data, setLoading);
-        dispatch(setUser(user));
-        localStorage.setItem("currentUser", JSON.stringify(user));
-        navigate("/dashboard");
+        if (user) {
+          dispatch(setUser(user));
+          localStorage.setItem("currentUser", JSON.stringify(user));
+          navigate("/dashboard");
+        }
       } catch (error: any) {
         //Already handled by CathErr
       }

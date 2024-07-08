@@ -19,7 +19,7 @@ const errorMessages: {
     type: "info",
   },
   unavailable: { message: "Firebase client is offline", type: "error" },
-  "auth/invalid-login-credentials": {
+  "auth/invalid-credential": {
     message: "Invalid credentials",
     type: "error",
   },
