@@ -28,13 +28,15 @@ const HeaderButtons: React.FC = () => {
             secondary
             className="hidden md:flex"
           />
-          <IconButton Icon={MdAdd} className="block md:hidden" />
+          <IconButton Icon={MdAdd} className="block md:hidden" link="" />
         </>
       )}
       {location.pathname !== "/dashboard/chat" && (
-        <IconButton Icon={BsFillChatFill} ping />
+        <IconButton Icon={BsFillChatFill} ping link="chat" />
       )}
-      {location.pathname !== "/dashboard" && <IconButton Icon={FiList} />}
+      {location.pathname !== "/dashboard" && (
+        <IconButton Icon={FiList} link="dashboard" />
+      )}
       <section className="relative group">
         <UserProfileHeader user={user} />
         <div className="group-hover:block hidden absolute">
