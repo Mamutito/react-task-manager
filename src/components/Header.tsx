@@ -4,7 +4,7 @@ import HeaderButtons from "./HeaderButtons";
 
 const Header: React.FC = () => {
   return (
-    <header className="flex flex-wrap items-center gap-5 justify-between drop-shadow-md bg-gradient-to-r from-myBlue to-myPink p-5 md:py-2">
+    <header className="relative z-10 flex flex-wrap items-center gap-5 justify-between drop-shadow-md bg-gradient-to-r from-myBlue to-myPink p-5 md:py-2">
       <Link to="/dashboard">
         <img src={logo} alt="check sign" className="w-16 drop-shadow-md" />
       </Link>

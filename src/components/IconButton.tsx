@@ -19,7 +19,7 @@ const IconButton: React.FC<Props> = ({
   className,
   link,
 }) => {
-  const Classes = `block rounded-full p-3 transition-all hover:hover:bg-blue-700 ${
+  const Classes = `block rounded-full p-3 transition-all hover:bg-blue-700 ${
     reduceHoverOpacity
       ? "hover:bg-opacity-30"
       : "bg-myBlue text-white hover:drop-shadow-lg border-2 border-white"
