@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import usersReducer from "./usersSlice";
+import tasksReducer from "./tasksSlice";
 
 const store = configureStore({
-  reducer: { users: usersReducer },
+  reducer: { users: usersReducer, tasks: tasksReducer },
 });
 
 export type RootState = ReturnType<typeof store.getState>;
