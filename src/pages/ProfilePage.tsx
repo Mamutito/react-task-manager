@@ -2,7 +2,7 @@ import React from "react";
 
 type Props = {};
 
-const ProfilePage = (props: Props) => {
+const ProfilePage: React.FC = (props: Props) => {
   return <div>ProfilePage</div>;
 };
 

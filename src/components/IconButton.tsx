@@ -1,6 +1,7 @@
 import React from "react";
 import { IconType } from "react-icons";
 import { Link } from "react-router-dom";
+import Spinner from "./Spinner";
 
 type Props = {
   Icon: IconType;
@@ -9,6 +10,7 @@ type Props = {
   size?: string;
   reduceHoverOpacity?: boolean;
   ping?: boolean;
+  loading?: boolean;
 };
 
 const IconButton: React.FC<Props> = ({
@@ -18,12 +20,13 @@ const IconButton: React.FC<Props> = ({
   ping,
   className,
   link,
+  loading = false,
 }) => {
   const Classes = `block rounded-full p-3 transition-all hover:bg-blue-700 ${
     reduceHoverOpacity
       ? "hover:bg-opacity-30"
       : "bg-myBlue text-white hover:drop-shadow-lg border-2 border-white"
-  } active:scale-90 ${className}`;
+  } ${loading && "cursor-wait"} active:scale-90 ${className}`;
 
   return (
     <span className={ping ? "relative inline-flex" : undefined}>
@@ -32,8 +35,8 @@ const IconButton: React.FC<Props> = ({
           <Icon size={size} />
         </Link>
       ) : (
-        <button className={Classes}>
-          <Icon size={size} />
+        <button className={Classes} disabled={loading}>
+          {loading ? <Spinner /> : <Icon size={size} />}
         </button>
       )}
 
