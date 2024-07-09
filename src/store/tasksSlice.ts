@@ -5,6 +5,7 @@ export const defaultTaskList: taskListType = {
   id: "",
   title: "Type your task title...",
   tasks: [],
+  editMode: true,
 };
 
 export const defaultTask: taskType = {
@@ -14,19 +15,26 @@ export const defaultTask: taskType = {
 };
 
 interface tasksSliceType {
-  currentTasks: taskListType;
+  currentTasks: taskListType[];
 }
 
 const initialState: tasksSliceType = {
-  currentTasks: defaultTaskList,
+  currentTasks: [],
 };
 
 const tasksSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
-    setTaskList: (state, action) => {},
-    addTaskList: (state, action) => {},
+    setTaskList: (state, action) => {
+      state.currentTasks[action.payload.id] = action.payload.taskList;
+    },
+    addTaskList: (state) => {
+      state.currentTasks.push({
+        ...defaultTaskList,
+        id: state.currentTasks.length.toString(),
+      });
+    },
   },
 });
 

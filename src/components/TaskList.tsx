@@ -7,10 +7,6 @@ const TaskList: React.FC = (props: Props) => {
   return (
     <ul className="p-3 pb-6 space-y-3 bg-blue-100">
       <TaskItem />
-      <TaskItem />
-      <TaskItem />
-      <TaskItem />
-      <TaskItem />
     </ul>
   );
 };

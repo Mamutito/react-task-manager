@@ -11,6 +11,7 @@ type Props = {
   reduceHoverOpacity?: boolean;
   ping?: boolean;
   loading?: boolean;
+  onClick?: () => void;
 };
 
 const IconButton: React.FC<Props> = ({
@@ -21,6 +22,7 @@ const IconButton: React.FC<Props> = ({
   className,
   link,
   loading = false,
+  onClick,
 }) => {
   const Classes = `block rounded-full p-3 transition-all hover:bg-blue-700 ${
     reduceHoverOpacity
@@ -35,7 +37,7 @@ const IconButton: React.FC<Props> = ({
           <Icon size={size} />
         </Link>
       ) : (
-        <button className={Classes} disabled={loading}>
+        <button className={Classes} disabled={loading} onClick={onClick}>
           {loading ? <Spinner /> : <Icon size={size} />}
         </button>
       )}
