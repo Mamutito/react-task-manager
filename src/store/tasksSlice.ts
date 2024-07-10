@@ -3,7 +3,7 @@ import { taskListType, taskType } from "../types";
 
 export const defaultTaskList: taskListType = {
   id: "",
-  title: "Type your task title...",
+  title: "",
   tasks: [],
   editMode: true,
 };

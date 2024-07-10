@@ -4,7 +4,10 @@ import {
   doc,
   getDoc,
   getDocs,
+  orderBy,
   query,
+  serverTimestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { setLoadingType, taskListType } from "../types";
@@ -19,17 +22,21 @@ export const FB_setTaskList = async (
   uid: string
 ) => {
   setLoading(true);
+  let docId = id;
   try {
     if (id.length > 5) {
-      //update the current tasklist
+      await updateDoc(doc(db, COLLECTIONS.TASKLIST, id), {
+        title,
+      });
     } else {
       const listData = await addDoc(collection(db, COLLECTIONS.TASKLIST), {
         uid,
         title,
+        createdDate: serverTimestamp(),
       });
-
-      return await getTaskList(listData.id);
+      docId = listData.id;
     }
+    return await getTaskList(docId);
   } catch (error: any) {
     CatchErr(error);
   } finally {
@@ -51,7 +58,8 @@ export const getTaskList = async (
 export const getAllTaskList = async (uid: string) => {
   const q = query(
     collection(db, COLLECTIONS.TASKLIST),
-    where("uid", "==", uid)
+    where("uid", "==", uid),
+    orderBy("createdDate")
   );
 
   const querySnapshot = await getDocs(q);
