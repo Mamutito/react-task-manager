@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { Link, useLocation } from "react-router-dom";
 import { FB_AuthSignOut } from "../backend/authQueries";
 import { defaultUser, setUser } from "../store/usersSlice";
-import { addTaskList, defaultTaskList } from "../store/tasksSlice";
+import { addTemporaryTaskList } from "../store/tasksSlice";
 
 const HeaderButtons: React.FC = () => {
   const user = useAppSelector((state) => state.users.currentUser);
@@ -21,7 +21,7 @@ const HeaderButtons: React.FC = () => {
     localStorage.removeItem("currentUser");
   };
   const handleAddNewTaskList = () => {
-    dispatch(addTaskList());
+    dispatch(addTemporaryTaskList());
   };
   return (
     <section className="flex flex-row-reverse justify-center gap-5 md:flex-row">

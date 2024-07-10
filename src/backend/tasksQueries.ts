@@ -37,14 +37,15 @@ export const FB_setTaskList = async (
   }
 };
 
-export const getTaskList = async (id: string) => {
+export const getTaskList = async (
+  id: string
+): Promise<taskListType | undefined> => {
   const docData = await getDoc(doc(db, COLLECTIONS.TASKLIST, id));
   if (docData.exists()) {
     const data = docData.data();
-    return { id: docData.id, uid: data.uid, title: data.title };
+    return { id: docData.id, title: data.title, tasks: [], editMode: false };
   } else {
     toastErr("getTaskList: taskList not found");
-    return;
   }
 };
 export const getAllTaskList = async (uid: string) => {
@@ -56,8 +57,8 @@ export const getAllTaskList = async (uid: string) => {
   const querySnapshot = await getDocs(q);
   const currentTaskLists: taskListType[] = [];
   querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    // currentTaskLists.push({ id: doc.id, ...data });
-    // console.log(doc.id, " => ", doc.data());
+    const { title } = doc.data();
+    currentTaskLists.push({ id: doc.id, title, tasks: [], editMode: false });
   });
+  return currentTaskLists;
 };

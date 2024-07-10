@@ -9,7 +9,7 @@ import {
   createBrowserRouter,
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import ListPage from "./pages/ListPage";
+import ListPage, { taskListLoader } from "./pages/ListPage";
 import ChatPage from "./pages/ChatPage";
 import ProfilePage from "./pages/ProfilePage";
 
@@ -27,7 +27,11 @@ const router = createBrowserRouter([
     element: <ProtectedRoute />,
     loader: authLoader as LoaderFunction,
     children: [
-      { index: true, element: <ListPage /> },
+      {
+        index: true,
+        element: <ListPage />,
+        loader: taskListLoader as LoaderFunction,
+      },
       { path: "chat", element: <ChatPage /> },
       { path: "profile", element: <ProfilePage /> },
     ],

@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { taskListType, taskType } from "../types";
 
 export const defaultTaskList: taskListType = {
@@ -15,29 +15,51 @@ export const defaultTask: taskType = {
 };
 
 interface tasksSliceType {
-  currentTasks: taskListType[];
+  currentTasksList: taskListType[];
+  temporaryTasksList: taskListType[];
 }
 
 const initialState: tasksSliceType = {
-  currentTasks: [],
+  currentTasksList: [],
+  temporaryTasksList: [],
 };
 
 const tasksSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
-    setTaskList: (state, action) => {
-      state.currentTasks[action.payload.id] = action.payload.taskList;
+    setTaskList: (state, action: PayloadAction<taskListType[]>) => {
+      state.currentTasksList = action.payload;
     },
-    addTaskList: (state) => {
-      state.currentTasks.push({
+    updateTaskList: (state, action: PayloadAction<taskListType>) => {
+      const taskListIndex = state.currentTasksList.findIndex(
+        (taskList) => taskList.id === action.payload.id
+      );
+      if (taskListIndex !== -1) {
+        state.currentTasksList[taskListIndex] = action.payload;
+      } else {
+        state.currentTasksList.push(action.payload);
+      }
+    },
+    addTemporaryTaskList: (state) => {
+      state.temporaryTasksList.push({
         ...defaultTaskList,
-        id: state.currentTasks.length.toString(),
+        id: state.temporaryTasksList.length.toString(),
       });
+    },
+    removeTemporaryTaskList: (state, action: PayloadAction<string>) => {
+      state.temporaryTasksList = state.temporaryTasksList.filter(
+        (taskList) => taskList.id !== action.payload
+      );
     },
   },
 });
 
-export const { addTaskList, setTaskList } = tasksSlice.actions;
+export const {
+  addTemporaryTaskList,
+  setTaskList,
+  updateTaskList,
+  removeTemporaryTaskList,
+} = tasksSlice.actions;
 
 export default tasksSlice.reducer;

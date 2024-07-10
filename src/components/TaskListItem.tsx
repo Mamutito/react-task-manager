@@ -5,7 +5,7 @@ import TaskList from "./TaskList";
 import { taskListType } from "../types";
 import { FB_setTaskList } from "../backend/tasksQueries";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { setTaskList } from "../store/tasksSlice";
+import { removeTemporaryTaskList, updateTaskList } from "../store/tasksSlice";
 
 type Props = {
   taskList: taskListType;
@@ -19,7 +19,8 @@ const TaskListItem: React.FC<Props> = ({ taskList }) => {
   const handleSaveTaskList = async () => {
     const taskListData = await FB_setTaskList(setLoading, taskList, uid);
     if (taskListData) {
-      dispatch(setTaskList({ taskList: taskListData, id: taskList.id }));
+      dispatch(removeTemporaryTaskList(taskList.id));
+      dispatch(updateTaskList(taskListData));
     }
   };
   return (
