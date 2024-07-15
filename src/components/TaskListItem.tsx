@@ -1,10 +1,11 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import IconButton from "./IconButton";
 import {
   MdAdd,
   MdDelete,
   MdEdit,
   MdKeyboardArrowDown,
+  MdKeyboardArrowUp,
   MdSave,
 } from "react-icons/md";
 import TaskList from "./TaskList";
@@ -13,6 +14,7 @@ import { FB_setTaskList, FB_deleteTaskList } from "../backend/tasksQueries";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   addTask,
+  collapseTaskList,
   deleteTaskList,
   removeTemporaryTaskList,
   updateTaskList,
@@ -28,10 +30,15 @@ const TaskListItem = forwardRef(
   ({ taskList }: Props, ref: React.LegacyRef<HTMLElement>) => {
     const [saveLoading, setSaveLoading] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
+    const [isCollapseAll, setIsCollapseAll] = useState(true);
     const uid = useAppSelector((state) => state.users.currentUser.id);
     const { title, id, editMode, tasks } = taskList;
     const [titleTaskList, setTitleTaskList] = useState(title);
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+      setIsCollapseAll(tasks.every((task) => task.collapsed === true));
+    }, [tasks]);
 
     const handleSaveTaskList = async () => {
       if (!titleTaskList) {
@@ -79,6 +86,11 @@ const TaskListItem = forwardRef(
       dispatch(addTask(id));
     };
 
+    const handleCollapseAll = () => {
+      dispatch(collapseTaskList({ tlid: id, collapsed: !isCollapseAll }));
+      setIsCollapseAll((prev) => !prev);
+    };
+
     return (
       <article className="relative" ref={ref}>
         <div className="min-h-40 drop-shadow-md ">
@@ -107,7 +119,11 @@ const TaskListItem = forwardRef(
                 loading={deleteLoading}
                 onClick={handleDelete}
               />
-              <IconButton Icon={MdKeyboardArrowDown} reduceHoverOpacity />
+              <IconButton
+                Icon={isCollapseAll ? MdKeyboardArrowUp : MdKeyboardArrowDown}
+                onClick={handleCollapseAll}
+                reduceHoverOpacity
+              />
             </div>
           </header>
           <TaskList tasks={tasks} listId={id} />

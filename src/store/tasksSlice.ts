@@ -81,6 +81,22 @@ const tasksSlice = createSlice({
         });
       }
     },
+    collapseTaskList: (
+      state,
+      action: PayloadAction<{ tlid: string; collapsed: boolean }>
+    ) => {
+      console.log("collapsed", action.payload.collapsed);
+      const { taskListIndex, tasks } = findTaskListAndTasks(
+        state.currentTasksList,
+        action.payload.tlid
+      );
+      if (taskListIndex !== -1) {
+        state.currentTasksList[taskListIndex].tasks = tasks.map((task) => ({
+          ...task,
+          collapsed: action.payload.collapsed,
+        }));
+      }
+    },
     updateTask: (
       state,
       action: PayloadAction<{ task: taskType; listId: string; newId?: string }>
@@ -127,6 +143,7 @@ export const {
   addTask,
   updateTask,
   deleteTask,
+  collapseTaskList,
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;
