@@ -10,15 +10,20 @@ import { Link, useLocation } from "react-router-dom";
 import { FB_AuthSignOut } from "../backend/authQueries";
 import { defaultUser, setUser } from "../store/usersSlice";
 import { addTemporaryTaskList } from "../store/tasksSlice";
+import CatchErr from "../utils/catchErr";
 
 const HeaderButtons: React.FC = () => {
   const user = useAppSelector((state) => state.users.currentUser);
   const location = useLocation();
   const dispatch = useAppDispatch();
   const handleSignOut = async () => {
-    await FB_AuthSignOut(user.id);
-    dispatch(setUser(defaultUser));
-    localStorage.removeItem("currentUser");
+    try {
+      await FB_AuthSignOut(user.id);
+      dispatch(setUser(defaultUser));
+      localStorage.removeItem("currentUser");
+    } catch (error) {
+      CatchErr(error);
+    }
   };
   const handleAddNewTaskList = () => {
     dispatch(addTemporaryTaskList());

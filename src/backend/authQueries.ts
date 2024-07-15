@@ -4,8 +4,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth, db } from "./firebase";
-import CatchErr from "../utils/catchErr";
-import { authDataType, setLoadingType, userType } from "../types";
+import { authDataType, userType } from "../types";
 import {
   doc,
   getDoc,
@@ -18,11 +17,7 @@ import { toastErr } from "../utils/toast";
 import { defaultUser } from "../store/usersSlice";
 import avatarGenerator from "../utils/avatarGenerator";
 
-export const FB_AuthSignUp = async (
-  { email, password }: authDataType,
-  setLoading: setLoadingType
-) => {
-  setLoading(true);
+export const FB_AuthSignUp = async ({ email, password }: authDataType) => {
   try {
     const { user } = await createUserWithEmailAndPassword(
       auth,
@@ -39,25 +34,17 @@ export const FB_AuthSignUp = async (
     const userInfo = await addUserToCollection(userData);
     return userInfo;
   } catch (error: any) {
-    CatchErr(error);
-  } finally {
-    setLoading(false);
+    throw error;
   }
 };
 
-export const FB_AuthSignIn = async (
-  { email, password }: authDataType,
-  setLoading: setLoadingType
-) => {
-  setLoading(true);
+export const FB_AuthSignIn = async ({ email, password }: authDataType) => {
   try {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
     await updateUserInfo({ id: user.uid, isOnline: true });
-    return getUserInfo(user.uid);
+    return await getUserInfo(user.uid);
   } catch (error: any) {
-    CatchErr(error);
-  } finally {
-    setLoading(false);
+    throw error;
   }
 };
 
@@ -67,7 +54,7 @@ export const FB_AuthSignOut = async (id: string) => {
     await updateUserInfo({ id, isOnline: false });
     return;
   } catch (error: any) {
-    CatchErr(error);
+    throw error;
   }
 };
 
@@ -82,38 +69,45 @@ const addUserToCollection = async ({
   username: string;
   img: string;
 }) => {
-  await setDoc(doc(db, COLLECTIONS.USERS, uid), {
-    isOnline: true,
-    img,
-    username,
-    email,
-    creationTime: serverTimestamp(),
-    lastSeen: serverTimestamp(),
-    bio: `Hi! my name is ${username}, thanks to mamutito for this site.`,
-  });
-  return getUserInfo(uid);
+  try {
+    await setDoc(doc(db, COLLECTIONS.USERS, uid), {
+      isOnline: true,
+      img,
+      username,
+      email,
+      creationTime: serverTimestamp(),
+      lastSeen: serverTimestamp(),
+      bio: `Hi! my name is ${username}, thanks to mamutito for this site.`,
+    });
+    return await getUserInfo(uid);
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const getUserInfo = async (uid: string): Promise<userType> => {
   const userRef = doc(db, COLLECTIONS.USERS, uid);
-  const user = await getDoc(userRef);
-
-  if (user.exists()) {
-    const { isOnline, img, username, email, creationTime, lastSeen, bio } =
-      user.data();
-    return {
-      id: uid,
-      isOnline,
-      img,
-      username,
-      email,
-      creationTime: creationTime.toDate().toLocaleString(),
-      lastSeen: lastSeen.toDate().toLocaleString(),
-      bio,
-    };
-  } else {
-    toastErr("getUserInfo: user not found");
-    return defaultUser;
+  try {
+    const user = await getDoc(userRef);
+    if (user.exists()) {
+      const { isOnline, img, username, email, creationTime, lastSeen, bio } =
+        user.data();
+      return {
+        id: uid,
+        isOnline,
+        img,
+        username,
+        email,
+        creationTime: creationTime.toDate().toLocaleString(),
+        lastSeen: lastSeen.toDate().toLocaleString(),
+        bio,
+      };
+    } else {
+      toastErr("getUserInfo: user not found");
+      return defaultUser;
+    }
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -127,6 +121,6 @@ const updateUserInfo = async (data: Partial<userType>) => {
   try {
     await updateDoc(userRef, updateData);
   } catch (error) {
-    CatchErr(error);
+    throw error;
   }
 };

@@ -12,6 +12,7 @@ import { taskListType } from "../types";
 import { FB_setTaskList, FB_deleteTaskList } from "../backend/tasksQueries";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
+  addTask,
   deleteTaskList,
   removeTemporaryTaskList,
   updateTaskList,
@@ -37,21 +38,26 @@ const TaskListItem = forwardRef(
         toastErr("Task list title cannot be empty");
         return;
       }
-      if (titleTaskList !== taskList.title) {
+      if (titleTaskList === taskList.title) {
+        handleEditMode();
+        return;
+      }
+      setSaveLoading(true);
+      try {
         const updatedTaskList = { ...taskList, title: titleTaskList };
-        const taskListData = await FB_setTaskList(
-          setSaveLoading,
-          updatedTaskList,
-          uid
-        );
+        const taskListData = await FB_setTaskList(updatedTaskList, uid);
         if (taskListData) {
           dispatch(removeTemporaryTaskList(id));
           dispatch(updateTaskList(taskListData));
         }
-      } else {
-        handleEditMode();
+      } catch (error) {
+        CatchErr(error);
+        console.error(error);
+      } finally {
+        setSaveLoading(false);
       }
     };
+
     const handleEditMode = () => {
       dispatch(updateTaskList({ ...taskList, editMode: !editMode }));
     };
@@ -69,10 +75,14 @@ const TaskListItem = forwardRef(
       }
     };
 
+    const handleAddTask = () => {
+      dispatch(addTask(id));
+    };
+
     return (
       <article className="relative" ref={ref}>
-        <div className="min-h-40 drop-shadow-md rounded-t-md overflow-hidden">
-          <header className="flex items-center placeholder-gray-300 p-3 text-white justify-between  bg-gradient-to-r from-myBlue to-myPink">
+        <div className="min-h-40 drop-shadow-md ">
+          <header className="flex items-center placeholder-gray-300 p-3 text-white justify-between rounded-t-md overflow-hidden  bg-gradient-to-r from-myBlue to-myPink">
             {editMode ? (
               <input
                 value={titleTaskList}
@@ -100,13 +110,14 @@ const TaskListItem = forwardRef(
               <IconButton Icon={MdKeyboardArrowDown} reduceHoverOpacity />
             </div>
           </header>
-          <TaskList />
+          <TaskList tasks={tasks} listId={id} />
+          <IconButton
+            Icon={MdAdd}
+            loading={saveLoading || taskList.editMode || deleteLoading}
+            onClick={handleAddTask}
+            className="absolute drop-shadow-lg -bottom-6 -left-6"
+          />
         </div>
-        <IconButton
-          Icon={MdAdd}
-          loading={saveLoading || taskList.editMode || deleteLoading}
-          className="absolute drop-shadow-lg -bottom-6 -left-6"
-        />
       </article>
     );
   }

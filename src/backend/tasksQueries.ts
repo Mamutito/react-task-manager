@@ -11,21 +11,18 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { setLoadingType, taskListType, taskType } from "../types";
+import { taskListType, taskType } from "../types";
 import { db } from "./firebase";
 import { COLLECTIONS } from "../utils/constants";
-import CatchErr from "../utils/catchErr";
 import { toastErr } from "../utils/toast";
 
 export const FB_setTaskList = async (
-  setLoading: setLoadingType,
   { title, id }: taskListType,
   uid: string
 ) => {
-  setLoading(true);
   let docId = id;
   try {
-    if (id.length > 5) {
+    if (docId.length > 5) {
       await updateDoc(doc(db, COLLECTIONS.TASKLIST, id), {
         title,
       });
@@ -37,15 +34,13 @@ export const FB_setTaskList = async (
       });
       docId = listData.id;
     }
-    return await getTaskList(docId);
-  } catch (error: any) {
-    CatchErr(error);
-  } finally {
-    setLoading(false);
+    return await FB_getTaskList(docId);
+  } catch (error) {
+    throw error;
   }
 };
 
-export const getTaskList = async (
+export const FB_getTaskList = async (
   id: string
 ): Promise<taskListType | undefined> => {
   try {
@@ -57,11 +52,11 @@ export const getTaskList = async (
       toastErr("getTaskList: taskList not found");
     }
   } catch (error) {
-    CatchErr(error);
+    throw error;
   }
 };
 
-export const getAllTaskList = async (uid: string) => {
+export const FB_getAllTaskList = async (uid: string) => {
   const q = query(
     collection(db, COLLECTIONS.TASKLIST),
     where("uid", "==", uid),
@@ -76,7 +71,7 @@ export const getAllTaskList = async (uid: string) => {
     });
     return currentTaskLists;
   } catch (error) {
-    CatchErr(error);
+    throw error;
   }
 };
 
@@ -96,6 +91,29 @@ export const FB_deleteTask = async (tlid: string, tid: string) => {
   const taskRef = doc(db, COLLECTIONS.TASKLIST, tlid, COLLECTIONS.TASKS, tid);
   try {
     await deleteDoc(taskRef);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const FB_setTask = async (task: taskType, listId: string) => {
+  const { id, description, title } = task;
+  try {
+    if (id.length > 5) {
+      // await updateDoc(doc(db, COLLECTIONS.TASKLIST, id), {
+      //   title,
+      // });
+    } else {
+      const listData = await addDoc(
+        collection(db, COLLECTIONS.TASKLIST, listId, COLLECTIONS.TASKS),
+        {
+          title,
+          description,
+          createdDate: serverTimestamp(),
+        }
+      );
+      return listData.id;
+    }
   } catch (error) {
     throw error;
   }

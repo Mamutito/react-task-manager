@@ -10,8 +10,10 @@ export const defaultTaskList: taskListType = {
 
 export const defaultTask: taskType = {
   id: "",
-  title: "Type your action...",
-  description: "Type your action description...",
+  title: "",
+  description: "",
+  editMode: true,
+  collapsed: false,
 };
 
 interface tasksSliceType {
@@ -57,6 +59,45 @@ const tasksSlice = createSlice({
         (taskList) => taskList.id !== action.payload
       );
     },
+    addTask: (state, action: PayloadAction<string>) => {
+      const taskListIndex = state.currentTasksList.findIndex(
+        (taskList) => taskList.id === action.payload
+      );
+      if (taskListIndex !== -1) {
+        const tasks = state.currentTasksList[taskListIndex].tasks;
+        tasks.push({
+          ...defaultTask,
+          id: tasks.length.toString(),
+        });
+      } else {
+        return state;
+      }
+    },
+    updateTask: (
+      state,
+      action: PayloadAction<{ task: taskType; listId: string; newId?: string }>
+    ) => {
+      const taskListIndex = state.currentTasksList.findIndex(
+        (taskList) => taskList.id === action.payload.listId
+      );
+      if (taskListIndex !== -1) {
+        const tasks = state.currentTasksList[taskListIndex].tasks;
+        console.log(tasks);
+        const tasksIndex = tasks.findIndex(
+          (task) => task.id === action.payload.task.id
+        );
+        if (tasksIndex !== -1) {
+          tasks[tasksIndex] = {
+            ...action.payload.task,
+            id: action.payload.newId || action.payload.task.id,
+          };
+        } else {
+          return state;
+        }
+      } else {
+        return state;
+      }
+    },
   },
 });
 
@@ -66,6 +107,8 @@ export const {
   updateTaskList,
   removeTemporaryTaskList,
   deleteTaskList,
+  addTask,
+  updateTask,
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;

@@ -5,6 +5,7 @@ import { useAppDispatch } from "../store/hooks";
 import { setUser } from "../store/usersSlice";
 import { getUserInfo } from "../backend/authQueries";
 import { userType } from "../types";
+import CatchErr from "../utils/catchErr";
 
 const ProtectedRoute: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -21,8 +22,11 @@ export const authLoader = async () => {
   const currentUser = localStorage.getItem("currentUser");
   if (currentUser) {
     const user: userType = JSON.parse(currentUser);
-
-    return await getUserInfo(user.id);
+    try {
+      return await getUserInfo(user.id);
+    } catch (error) {
+      CatchErr(error);
+    }
   }
   return false;
 };

@@ -6,6 +6,7 @@ import { toastWarn } from "../utils/toast";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../store/usersSlice";
 import { useAppDispatch } from "../store/hooks";
+import CatchErr from "../utils/catchErr";
 
 const Login: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -23,26 +24,31 @@ const Login: React.FC = () => {
 
     if (isLogin) {
       try {
-        const user = await FB_AuthSignIn(data, setLoading);
+        const user = await FB_AuthSignIn(data);
         if (user) {
           dispatch(setUser(user));
           localStorage.setItem("currentUser", JSON.stringify(user));
           navigate("/dashboard");
         }
       } catch (error: any) {
-        //Already handled by CathErr
+        CatchErr(error);
+      } finally {
+        setLoading(false);
       }
     } else {
       const confirmPassword = formData.get("password-confirm") as string;
       if (data.password.length >= 6) {
         if (data.password === confirmPassword) {
+          setLoading(true);
           try {
-            const user = await FB_AuthSignUp(data, setLoading);
+            const user = await FB_AuthSignUp(data);
             dispatch(setUser(user));
             localStorage.setItem("currentUser", JSON.stringify(user));
             navigate("/dashboard");
           } catch (error: any) {
-            //Already handled by CathErr
+            CatchErr(error);
+          } finally {
+            setLoading(false);
           }
         } else {
           toastWarn("Passwords do not match");

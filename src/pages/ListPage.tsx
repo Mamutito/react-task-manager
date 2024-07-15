@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import TaskListItem from "../components/TaskListItem";
-import { getAllTaskList } from "../backend/tasksQueries";
+import { FB_getAllTaskList } from "../backend/tasksQueries";
 import { taskListType, userType } from "../types";
 import { useLoaderData } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setTaskList } from "../store/tasksSlice";
 import FlipMove from "react-flip-move";
+import CatchErr from "../utils/catchErr";
 
 const ListPage: React.FC = () => {
   const taskListLoaderData = useLoaderData() as taskListType[];
@@ -49,8 +50,12 @@ export const taskListLoader = async () => {
   const currentUser = localStorage.getItem("currentUser");
   if (currentUser) {
     const user: userType = JSON.parse(currentUser);
-
-    return await getAllTaskList(user.id);
+    try {
+      return await FB_getAllTaskList(user.id);
+    } catch (error) {
+      CatchErr(error);
+      console.error(error);
+    }
   }
   return false;
 };
