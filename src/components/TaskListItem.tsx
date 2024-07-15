@@ -19,7 +19,6 @@ import {
 } from "../store/tasksSlice";
 import { toastErr } from "../utils/toast";
 import CatchErr from "../utils/catchErr";
-import { useLoaderData } from "react-router-dom";
 
 type Props = {
   taskList: taskListType;

@@ -3,10 +3,10 @@ import IconButton from "./IconButton";
 import { MdDelete, MdEdit, MdSaveAs } from "react-icons/md";
 import { taskType } from "../types";
 import { useAppDispatch } from "../store/hooks";
-import { updateTask } from "../store/tasksSlice";
+import { deleteTask, updateTask } from "../store/tasksSlice";
 import CatchErr from "../utils/catchErr";
 import { toastErr } from "../utils/toast";
-import { FB_setTask } from "../backend/tasksQueries";
+import { FB_deleteTask, FB_setTask } from "../backend/tasksQueries";
 
 type Props = {
   task: taskType;
@@ -19,6 +19,8 @@ const TaskItem = forwardRef(
     const [taskTitle, setTaskTitle] = useState(title);
     const [taskDescription, setTaskDescription] = useState(description);
     const [saveLoading, setSaveLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
     const dispatch = useAppDispatch();
     const handleEditMode = () => {
       dispatch(
@@ -34,6 +36,7 @@ const TaskItem = forwardRef(
         })
       );
     };
+
     const handleSaveTask = async () => {
       if (taskTitle === title && taskDescription === description) {
         handleEditMode();
@@ -69,6 +72,20 @@ const TaskItem = forwardRef(
         setSaveLoading(false);
       }
     };
+
+    const handleDelete = async () => {
+      setDeleteLoading(true);
+      try {
+        await FB_deleteTask(listId, task.id);
+        dispatch(deleteTask({ tlid: listId, tid: task.id }));
+      } catch (error) {
+        CatchErr(error);
+        console.error(error);
+      } finally {
+        setDeleteLoading(false);
+      }
+    };
+
     return (
       <li
         ref={ref}
@@ -113,7 +130,12 @@ const TaskItem = forwardRef(
                   loading={saveLoading}
                   onClick={editMode ? handleSaveTask : handleEditMode}
                 />
-                <IconButton Icon={MdDelete} reduceHoverOpacity />
+                <IconButton
+                  Icon={MdDelete}
+                  loading={deleteLoading}
+                  reduceHoverOpacity
+                  onClick={handleDelete}
+                />
               </div>
             </div>
           </div>

@@ -1,6 +1,16 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { taskListType, taskType } from "../types";
 
+const findTaskListAndTasks = (taskLists: taskListType[], listId: string) => {
+  const taskListIndex = taskLists.findIndex(
+    (taskList) => taskList.id === listId
+  );
+  if (taskListIndex !== -1) {
+    return { taskListIndex, tasks: taskLists[taskListIndex].tasks };
+  }
+  return { taskListIndex: -1, tasks: [] };
+};
+
 export const defaultTaskList: taskListType = {
   id: "",
   title: "",
@@ -60,28 +70,26 @@ const tasksSlice = createSlice({
       );
     },
     addTask: (state, action: PayloadAction<string>) => {
-      const taskListIndex = state.currentTasksList.findIndex(
-        (taskList) => taskList.id === action.payload
+      const { taskListIndex, tasks } = findTaskListAndTasks(
+        state.currentTasksList,
+        action.payload
       );
       if (taskListIndex !== -1) {
-        const tasks = state.currentTasksList[taskListIndex].tasks;
         tasks.push({
           ...defaultTask,
           id: tasks.length.toString(),
         });
-      } else {
-        return state;
       }
     },
     updateTask: (
       state,
       action: PayloadAction<{ task: taskType; listId: string; newId?: string }>
     ) => {
-      const taskListIndex = state.currentTasksList.findIndex(
-        (taskList) => taskList.id === action.payload.listId
+      const { taskListIndex, tasks } = findTaskListAndTasks(
+        state.currentTasksList,
+        action.payload.listId
       );
       if (taskListIndex !== -1) {
-        const tasks = state.currentTasksList[taskListIndex].tasks;
         const tasksIndex = tasks.findIndex(
           (task) => task.id === action.payload.task.id
         );
@@ -90,11 +98,21 @@ const tasksSlice = createSlice({
             ...action.payload.task,
             id: action.payload.newId || action.payload.task.id,
           };
-        } else {
-          return state;
         }
-      } else {
-        return state;
+      }
+    },
+    deleteTask: (
+      state,
+      action: PayloadAction<{ tlid: string; tid: string }>
+    ) => {
+      const { taskListIndex, tasks } = findTaskListAndTasks(
+        state.currentTasksList,
+        action.payload.tlid
+      );
+      if (taskListIndex !== -1) {
+        state.currentTasksList[taskListIndex].tasks = tasks.filter(
+          (task) => task.id !== action.payload.tid
+        );
       }
     },
   },
@@ -108,6 +126,7 @@ export const {
   deleteTaskList,
   addTask,
   updateTask,
+  deleteTask,
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;
