@@ -56,21 +56,29 @@ export const FB_getTaskList = async (
   }
 };
 
-export const FB_getAllTaskList = async (uid: string) => {
+export const FB_getAllTaskList = async (
+  uid: string
+): Promise<taskListType[]> => {
   const q = query(
-    collection(db, COLLECTIONS.TASKLIST),
+    collection(db, COLLECTIONS.TASKLIST), // Asegúrate de que "TASKLIST" es el nombre correcto de tu colección
     where("uid", "==", uid),
-    orderBy("createdDate")
+    orderBy("createdDate") // Asegúrate de que este campo existe y está indexado en Firestore
   );
+
   try {
     const querySnapshot = await getDocs(q);
     const currentTaskLists: taskListType[] = [];
-    querySnapshot.forEach((doc) => {
+
+    for (const doc of querySnapshot.docs) {
       const { title } = doc.data();
-      currentTaskLists.push({ id: doc.id, title, tasks: [], editMode: false });
-    });
+      const tasks = await FB_getAllTasks(doc.id);
+
+      currentTaskLists.push({ id: doc.id, title, tasks, editMode: false });
+    }
+
     return currentTaskLists;
   } catch (error) {
+    console.error("Error fetching task lists: ", error);
     throw error;
   }
 };
@@ -115,6 +123,30 @@ export const FB_setTask = async (task: taskType, listId: string) => {
       return listData.id;
     }
   } catch (error) {
+    throw error;
+  }
+};
+
+const FB_getAllTasks = async (tlid: string) => {
+  const tasks: taskType[] = [];
+  try {
+    const tasksSnapshot = await getDocs(
+      collection(db, COLLECTIONS.TASKLIST, tlid, COLLECTIONS.TASKS)
+    );
+
+    for (const task of tasksSnapshot.docs) {
+      const { title, description } = task.data();
+      tasks.push({
+        id: task.id,
+        title,
+        description,
+        editMode: false,
+        collapsed: true,
+      });
+    }
+    return tasks;
+  } catch (error) {
+    console.error("Error fetching tasks: ", error);
     throw error;
   }
 };

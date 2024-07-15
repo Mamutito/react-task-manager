@@ -25,6 +25,15 @@ const TaskItem = forwardRef(
         updateTask({ task: { ...task, editMode: !editMode }, listId: listId })
       );
     };
+
+    const handleCollapse = () => {
+      dispatch(
+        updateTask({
+          task: { ...task, collapsed: !collapsed },
+          listId: listId,
+        })
+      );
+    };
     const handleSaveTask = async () => {
       if (taskTitle === title && taskDescription === description) {
         handleEditMode();
@@ -47,6 +56,7 @@ const TaskItem = forwardRef(
             task: {
               ...taskUpdated,
               editMode: false,
+              collapsed: true,
             },
             listId: listId,
             newId: taskId || "",
@@ -74,11 +84,16 @@ const TaskItem = forwardRef(
               autoFocus
             />
           ) : (
-            <h3 className="cursor-pointer font-semibold mb-2">{taskTitle}</h3>
+            <h3
+              className="cursor-pointer font-semibold"
+              onClick={handleCollapse}
+            >
+              {taskTitle}
+            </h3>
           )}
         </header>
         {!collapsed && (
-          <div>
+          <div className="mt-2">
             <hr />
             <div>
               {editMode ? (

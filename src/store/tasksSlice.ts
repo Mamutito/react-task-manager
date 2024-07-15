@@ -82,7 +82,6 @@ const tasksSlice = createSlice({
       );
       if (taskListIndex !== -1) {
         const tasks = state.currentTasksList[taskListIndex].tasks;
-        console.log(tasks);
         const tasksIndex = tasks.findIndex(
           (task) => task.id === action.payload.task.id
         );
