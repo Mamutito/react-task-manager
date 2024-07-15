@@ -9,10 +9,15 @@ import {
 } from "react-icons/md";
 import TaskList from "./TaskList";
 import { taskListType } from "../types";
-import { FB_setTaskList } from "../backend/tasksQueries";
+import { FB_setTaskList, FB_deleteTaskList } from "../backend/tasksQueries";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { removeTemporaryTaskList, updateTaskList } from "../store/tasksSlice";
+import {
+  deleteTaskList,
+  removeTemporaryTaskList,
+  updateTaskList,
+} from "../store/tasksSlice";
 import { toastErr } from "../utils/toast";
+import CatchErr from "../utils/catchErr";
 
 type Props = {
   taskList: taskListType;
@@ -20,9 +25,10 @@ type Props = {
 
 const TaskListItem = forwardRef(
   ({ taskList }: Props, ref: React.LegacyRef<HTMLElement>) => {
-    const [loading, setLoading] = useState(false);
+    const [saveLoading, setSaveLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
     const uid = useAppSelector((state) => state.users.currentUser.id);
-    const { title, id, editMode } = taskList;
+    const { title, id, editMode, tasks } = taskList;
     const [titleTaskList, setTitleTaskList] = useState(title);
     const dispatch = useAppDispatch();
 
@@ -34,7 +40,7 @@ const TaskListItem = forwardRef(
       if (titleTaskList !== taskList.title) {
         const updatedTaskList = { ...taskList, title: titleTaskList };
         const taskListData = await FB_setTaskList(
-          setLoading,
+          setSaveLoading,
           updatedTaskList,
           uid
         );
@@ -49,6 +55,20 @@ const TaskListItem = forwardRef(
     const handleEditMode = () => {
       dispatch(updateTaskList({ ...taskList, editMode: !editMode }));
     };
+
+    const handleDelete = async () => {
+      setDeleteLoading(true);
+      try {
+        await FB_deleteTaskList(id, tasks);
+        dispatch(deleteTaskList(id));
+      } catch (error) {
+        CatchErr(error);
+        console.error(error);
+      } finally {
+        setDeleteLoading(false);
+      }
+    };
+
     return (
       <article className="relative" ref={ref}>
         <div className="min-h-40 drop-shadow-md rounded-t-md overflow-hidden">
@@ -69,9 +89,14 @@ const TaskListItem = forwardRef(
                 Icon={editMode ? MdSave : MdEdit}
                 reduceHoverOpacity
                 onClick={editMode ? handleSaveTaskList : handleEditMode}
-                loading={editMode && loading}
+                loading={editMode && saveLoading}
               />
-              <IconButton Icon={MdDelete} reduceHoverOpacity />
+              <IconButton
+                Icon={MdDelete}
+                reduceHoverOpacity
+                loading={deleteLoading}
+                onClick={handleDelete}
+              />
               <IconButton Icon={MdKeyboardArrowDown} reduceHoverOpacity />
             </div>
           </header>
@@ -79,7 +104,7 @@ const TaskListItem = forwardRef(
         </div>
         <IconButton
           Icon={MdAdd}
-          loading={loading || taskList.editMode}
+          loading={saveLoading || taskList.editMode || deleteLoading}
           className="absolute drop-shadow-lg -bottom-6 -left-6"
         />
       </article>

@@ -52,6 +52,11 @@ const tasksSlice = createSlice({
         (taskList) => taskList.id !== action.payload
       );
     },
+    deleteTaskList: (state, action: PayloadAction<string>) => {
+      state.currentTasksList = state.currentTasksList.filter(
+        (taskList) => taskList.id !== action.payload
+      );
+    },
   },
 });
 
@@ -60,6 +65,7 @@ export const {
   setTaskList,
   updateTaskList,
   removeTemporaryTaskList,
+  deleteTaskList,
 } = tasksSlice.actions;
 
 export default tasksSlice.reducer;
