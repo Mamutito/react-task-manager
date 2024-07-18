@@ -108,18 +108,21 @@ const TaskListItem = forwardRef(
             )}
             <div className="flex">
               <IconButton
+                size="16"
                 Icon={editMode ? MdSave : MdEdit}
                 reduceHoverOpacity
                 onClick={editMode ? handleSaveTaskList : handleEditMode}
                 loading={editMode && saveLoading}
               />
               <IconButton
+                size="16"
                 Icon={MdDelete}
                 reduceHoverOpacity
                 loading={deleteLoading}
                 onClick={handleDelete}
               />
               <IconButton
+                size="16"
                 Icon={isCollapseAll ? MdKeyboardArrowUp : MdKeyboardArrowDown}
                 onClick={handleCollapseAll}
                 reduceHoverOpacity

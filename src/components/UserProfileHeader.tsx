@@ -16,7 +16,7 @@ const UserProfileHeader: React.FC<Props> = ({ user, onClick }) => {
       <div className="relative">
         <img
           className="w-11 h-11 rounded-full p-0.5 ring-white ring-2"
-          src={`${user.img}.png`}
+          src={`${user.img}`}
           alt="random avatar"
         />
         <span className="absolute -top-1 -right-0 rounded-full h-4 w-4 bg-green-400 border-gray-800 border-2"></span>

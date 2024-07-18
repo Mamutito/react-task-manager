@@ -1,7 +1,10 @@
 import {
   createUserWithEmailAndPassword,
+  getAuth,
   signInWithEmailAndPassword,
   signOut,
+  updateEmail,
+  updatePassword,
 } from "firebase/auth";
 import { auth, db } from "./firebase";
 import { authDataType, userType } from "../types";
@@ -13,9 +16,10 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { COLLECTIONS } from "../utils/constants";
-import { toastErr } from "../utils/toast";
+import { toastErr, toastSucc } from "../utils/toast";
 import { defaultUser } from "../store/usersSlice";
 import avatarGenerator from "../utils/avatarGenerator";
+import CatchErr from "../utils/catchErr";
 
 export const FB_AuthSignUp = async ({ email, password }: authDataType) => {
   try {
@@ -55,6 +59,41 @@ export const FB_AuthSignOut = async (id: string) => {
     return;
   } catch (error: any) {
     throw error;
+  }
+};
+
+export const FB_saveProfile = async ({
+  username,
+  email,
+  password,
+  img,
+}: {
+  username: string;
+  email: string;
+  password: string;
+  img: string;
+}) => {
+  const auth = getAuth();
+  if (auth.currentUser) {
+    try {
+      if (auth.currentUser.email !== email) {
+        // TODO: Email verification.
+        await updateEmail(auth.currentUser, email);
+      }
+      if (password !== "") {
+        await updatePassword(auth.currentUser, password);
+      }
+      if (username || img) {
+        await updateUserInfo({
+          id: auth.currentUser.uid,
+          username,
+          img,
+        });
+      }
+      toastSucc("Profile updated successfully");
+    } catch (error) {
+      CatchErr(error);
+    }
   }
 };
 

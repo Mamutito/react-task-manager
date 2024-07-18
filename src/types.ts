@@ -14,6 +14,13 @@ export type userType = {
   lastSeen?: string;
   bio?: string;
 };
+export type FormProfileData = {
+  img: string;
+  email: string;
+  username: string;
+  password: string;
+  "password-confirm": string;
+};
 
 export type taskListType = {
   id: string;

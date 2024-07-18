@@ -85,7 +85,6 @@ const tasksSlice = createSlice({
       state,
       action: PayloadAction<{ tlid: string; collapsed: boolean }>
     ) => {
-      console.log("collapsed", action.payload.collapsed);
       const { taskListIndex, tasks } = findTaskListAndTasks(
         state.currentTasksList,
         action.payload.tlid

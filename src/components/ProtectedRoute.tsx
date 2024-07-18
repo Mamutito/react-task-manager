@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate, useLoaderData } from "react-router-dom";
 import Layout from "../pages/Layout";
 import { useAppDispatch } from "../store/hooks";
@@ -10,9 +10,11 @@ import CatchErr from "../utils/catchErr";
 const ProtectedRoute: React.FC = () => {
   const dispatch = useAppDispatch();
   const authenticatedUser = useLoaderData() as userType;
-  if (authenticatedUser) {
-    dispatch(setUser(authenticatedUser));
-  }
+  useEffect(() => {
+    if (authenticatedUser) {
+      dispatch(setUser(authenticatedUser));
+    }
+  }, [authenticatedUser, dispatch]);
   return authenticatedUser ? <Layout /> : <Navigate to="/auth" replace />;
 };
 

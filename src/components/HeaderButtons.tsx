@@ -50,7 +50,7 @@ const HeaderButtons: React.FC = () => {
         <IconButton Icon={BsFillChatFill} ping link="chat" />
       )}
       {location.pathname !== "/dashboard" && (
-        <IconButton Icon={FiList} link="dashboard" />
+        <IconButton Icon={FiList} link="/dashboard" />
       )}
       <section className="relative group">
         <UserProfileHeader user={user} />

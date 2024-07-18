@@ -11,7 +11,7 @@ import {
 import LoginPage from "./pages/LoginPage";
 import ListPage, { taskListLoader } from "./pages/ListPage";
 import ChatPage from "./pages/ChatPage";
-import ProfilePage from "./pages/ProfilePage";
+import ProfilePage, { action as updateUserAction } from "./pages/ProfilePage";
 
 import store from "./store/store";
 import { ToastContainer } from "react-toastify";
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
         loader: taskListLoader as LoaderFunction,
       },
       { path: "chat", element: <ChatPage /> },
-      { path: "profile", element: <ProfilePage /> },
+      { path: "profile", element: <ProfilePage />, action: updateUserAction },
     ],
   },
   {
