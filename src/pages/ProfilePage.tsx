@@ -1,19 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import Input from "../components/Input";
-import { Form, redirect, useNavigation } from "react-router-dom";
+import { Form, redirect, useNavigate, useNavigation } from "react-router-dom";
 import Button from "../components/Button";
-import { toastErr } from "../utils/toast";
+import { toastErr, toastSucc } from "../utils/toast";
 import avatarGenerator from "../utils/avatarGenerator";
-import { FB_saveProfile } from "../backend/authQueries";
+import { FB_deleteAccount, FB_saveProfile } from "../backend/authQueries";
 import { FormProfileData } from "../types";
+import { defaultUser, setUser } from "../store/usersSlice";
 
 const ProfilePage: React.FC = () => {
   const user = useAppSelector((state) => state.users.currentUser);
   const [imageURL, setImageURL] = useState(user.img);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const navigation = useNavigation();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const loading = navigation.state === "submitting";
-  const handleDeleteAccount = () => {};
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
+    if (confirmed) {
+      setDeleteLoading(true);
+      const result = await FB_deleteAccount();
+      if (result.success) {
+        dispatch(setUser(defaultUser));
+        toastSucc("Account deleted successfully.");
+        navigate("/auth");
+      } else {
+        toastErr(result.error);
+      }
+    }
+  };
   const handleAvatarGeneration = () => {
     setImageURL(avatarGenerator());
   };
@@ -62,13 +81,18 @@ const ProfilePage: React.FC = () => {
           name="password-confirm"
           placeholder="Enter again password"
         />
-        <Button text="Update profile" loading={loading} />
+        <Button
+          text="Update profile"
+          loading={loading}
+          disabled={deleteLoading}
+        />
         <Button
           type="button"
           text="Delete account"
           secondary
           onClick={handleDeleteAccount}
-          loading={loading}
+          disabled={loading}
+          loading={deleteLoading}
         />
       </Form>
     </section>

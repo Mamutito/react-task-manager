@@ -150,3 +150,18 @@ const FB_getAllTasks = async (tlid: string) => {
     throw error;
   }
 };
+
+export const FB_deleteAllTaskList = async (uid: string) => {
+  try {
+    const taskLists = await FB_getAllTaskList(uid);
+    if (taskLists.length > 0) {
+      await Promise.all(
+        taskLists.map((taskList) =>
+          FB_deleteTaskList(taskList.id, taskList.tasks)
+        )
+      );
+    }
+  } catch (error) {
+    throw error;
+  }
+};

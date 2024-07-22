@@ -1,5 +1,6 @@
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
   getAuth,
   signInWithEmailAndPassword,
   signOut,
@@ -9,6 +10,7 @@ import {
 import { auth, db } from "./firebase";
 import { authDataType, userType } from "../types";
 import {
+  deleteDoc,
   doc,
   getDoc,
   serverTimestamp,
@@ -20,6 +22,7 @@ import { toastErr, toastSucc } from "../utils/toast";
 import { defaultUser } from "../store/usersSlice";
 import avatarGenerator from "../utils/avatarGenerator";
 import CatchErr from "../utils/catchErr";
+import { FB_deleteAllTaskList } from "./tasksQueries";
 
 export const FB_AuthSignUp = async ({ email, password }: authDataType) => {
   try {
@@ -94,6 +97,33 @@ export const FB_saveProfile = async ({
     } catch (error) {
       CatchErr(error);
     }
+  }
+};
+
+export const FB_deleteUser = async (uid: string) => {
+  const userRef = doc(db, COLLECTIONS.USERS, uid);
+  try {
+    await deleteDoc(userRef);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const FB_deleteAccount = async () => {
+  const auth = getAuth();
+  if (auth.currentUser) {
+    const uid = auth.currentUser.uid;
+    try {
+      await deleteUser(auth.currentUser);
+      await FB_deleteAllTaskList(uid);
+      await FB_deleteUser(uid);
+      return { success: true };
+    } catch (error: any) {
+      CatchErr(error);
+      return { success: false, error: error.message };
+    }
+  } else {
+    return { success: false, error: "No user is currently logged in." };
   }
 };
 
