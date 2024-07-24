@@ -34,13 +34,13 @@ const ListPage: React.FC = () => {
     );
   }
   return (
-    <section>
+    <main>
       <FlipMove className="grid p-10 gap-10 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         {taskLists.map((taskList) => (
           <TaskListItem key={taskList.id} taskList={taskList} />
         ))}
       </FlipMove>
-    </section>
+    </main>
   );
 };
 

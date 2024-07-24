@@ -12,9 +12,15 @@ export const defaultUser: userType = {
 };
 
 interface UsersState {
+  chats: string[];
   currentUser: userType;
+  users: userType[];
 }
-const initialState: UsersState = { currentUser: defaultUser };
+const initialState: UsersState = {
+  currentUser: defaultUser,
+  users: [],
+  chats: [],
+};
 export const usersSlice = createSlice({
   initialState,
   name: "users",
@@ -22,7 +28,9 @@ export const usersSlice = createSlice({
     setUser: (state, action: PayloadAction<userType | undefined>) => {
       state.currentUser = action.payload || defaultUser;
     },
-    setUsers: (state, action: PayloadAction<userType[] | undefined>) => {},
+    setUsers: (state, action: PayloadAction<userType[] | undefined>) => {
+      state.users = action.payload || [];
+    },
   },
 });
 

@@ -5,7 +5,11 @@ import { Form, redirect, useNavigate, useNavigation } from "react-router-dom";
 import Button from "../components/Button";
 import { toastErr, toastSucc } from "../utils/toast";
 import avatarGenerator from "../utils/avatarGenerator";
-import { FB_deleteAccount, FB_saveProfile } from "../backend/authQueries";
+import {
+  FB_AuthSignOut,
+  FB_deleteAccount,
+  FB_saveProfile,
+} from "../backend/authQueries";
 import { FormProfileData } from "../types";
 import { defaultUser, setUser } from "../store/usersSlice";
 
@@ -29,7 +33,10 @@ const ProfilePage: React.FC = () => {
         toastSucc("Account deleted successfully.");
         navigate("/auth");
       } else {
-        toastErr(result.error);
+        await FB_AuthSignOut(user.id);
+        dispatch(setUser(defaultUser));
+        localStorage.removeItem("currentUser");
+        navigate("/auth");
       }
     }
   };
@@ -41,7 +48,7 @@ const ProfilePage: React.FC = () => {
   }, [user.img]);
 
   return (
-    <section className="bg-white shadow-md max-w-2xl m-5 md:m-auto md:mt-10 rounded-xl space-y-5 flex flex-col p-6 md:p-10">
+    <main className="bg-white shadow-md max-w-2xl m-5 md:m-auto md:mt-10 rounded-xl space-y-5 flex flex-col p-6 md:p-10">
       <header
         className="relative self-center cursor-pointer"
         onClick={!loading ? handleAvatarGeneration : undefined}
@@ -95,7 +102,7 @@ const ProfilePage: React.FC = () => {
           loading={deleteLoading}
         />
       </Form>
-    </section>
+    </main>
   );
 };
 

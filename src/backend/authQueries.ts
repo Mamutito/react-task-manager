@@ -10,9 +10,13 @@ import {
 import { auth, db } from "./firebase";
 import { authDataType, userType } from "../types";
 import {
+  collection,
   deleteDoc,
   doc,
   getDoc,
+  onSnapshot,
+  orderBy,
+  query,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -23,6 +27,7 @@ import { defaultUser } from "../store/usersSlice";
 import avatarGenerator from "../utils/avatarGenerator";
 import CatchErr from "../utils/catchErr";
 import { FB_deleteAllTaskList } from "./tasksQueries";
+import formatDate from "../utils/formDate";
 
 export const FB_AuthSignUp = async ({ email, password }: authDataType) => {
   try {
@@ -120,10 +125,54 @@ export const FB_deleteAccount = async () => {
       return { success: true };
     } catch (error: any) {
       CatchErr(error);
-      return { success: false, error: error.message };
+      return { success: false };
     }
   } else {
-    return { success: false, error: "No user is currently logged in." };
+    toastErr("No user is currently logged in.");
+    return { success: false };
+  }
+};
+
+export const FB_getAllUsers = (callback: (users: userType[]) => void) => {
+  const auth = getAuth();
+  if (auth.currentUser) {
+    try {
+      const q = query(
+        collection(db, COLLECTIONS.USERS),
+        orderBy("isOnline", "desc")
+      );
+      return onSnapshot(q, (usersSnapshot) => {
+        const users: userType[] = [];
+        usersSnapshot.forEach((user) => {
+          if (user.id !== auth.currentUser?.uid) {
+            // Filtrar el documento del usuario actual
+            const {
+              isOnline,
+              img,
+              username,
+              email,
+              creationTime,
+              lastSeen,
+              bio,
+            } = user.data();
+            users.push({
+              id: user.id,
+              isOnline,
+              img,
+              username,
+              email,
+              creationTime: formatDate(creationTime.toDate().toLocaleString()),
+              lastSeen: formatDate(lastSeen.toDate().toLocaleString()),
+              bio,
+            });
+          }
+        });
+        callback(users);
+      });
+    } catch (error) {
+      CatchErr(error);
+      console.error(error);
+    }
   }
 };
 
