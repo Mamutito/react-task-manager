@@ -6,11 +6,8 @@ import UsersList from "./UsersList";
 import { userType } from "../types";
 import { FB_getAllUsers } from "../backend/authQueries";
 import { setUsers } from "../store/usersSlice";
-type Props = {
-  className?: string;
-};
 
-const UsersSidebarLeft = ({ className }: Props) => {
+const UsersSidebarLeft = () => {
   const isChatTab = useAppSelector((state) => state.chat.isChatTab);
   const dispatch = useAppDispatch();
   const [usersState, setUsersState] = useState<userType[]>([]);
@@ -30,7 +27,7 @@ const UsersSidebarLeft = ({ className }: Props) => {
 
   return (
     <aside
-      className={`bg-white absolute w-full md:relative z-10 md:z-0 shadow-md border-2 rounded-l-3xl overflow-hidden ${className}`}
+      className={`bg-white absolute w-full md:relative z-10 md:z-0 shadow-md border-2 rounded-l-3xl overflow-hidden flex-[0.8] lg:flex-[0.3]`}
     >
       <header className="sticky flex top-0 z-10 w-full">
         <p
@@ -54,7 +51,7 @@ const UsersSidebarLeft = ({ className }: Props) => {
           Users
         </p>
       </header>
-      <section className="py-2 max-h-full">
+      <section className="py-2 max-h-full overflow-scroll">
         {isChatTab ? (
           <Chats />
         ) : (

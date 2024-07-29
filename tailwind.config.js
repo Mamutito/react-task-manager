@@ -10,6 +10,9 @@ module.exports = {
       backgroundImage: {
         pattern: "url('./assets/backgroundImage.jpg')",
       },
+      height: {
+        heightFix: "calc(100vh - 80px)",
+      },
     },
   },
   plugins: [],
