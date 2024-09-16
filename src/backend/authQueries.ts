@@ -14,6 +14,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
@@ -133,45 +134,44 @@ export const FB_deleteAccount = async () => {
   }
 };
 
-export const FB_getAllUsers = (callback: (users: userType[]) => void) => {
+export const FB_getAllUsers = async () => {
   const auth = getAuth();
   if (auth.currentUser) {
+    const q = query(
+      collection(db, COLLECTIONS.USERS),
+      orderBy("isOnline", "desc")
+    );
     try {
-      const q = query(
-        collection(db, COLLECTIONS.USERS),
-        orderBy("isOnline", "desc")
-      );
-      return onSnapshot(q, (usersSnapshot) => {
-        const users: userType[] = [];
-        usersSnapshot.forEach((user) => {
-          if (user.id !== auth.currentUser?.uid) {
-            // Filtrar el documento del usuario actual
-            const {
-              isOnline,
-              img,
-              username,
-              email,
-              creationTime,
-              lastSeen,
-              bio,
-            } = user.data();
-            users.push({
-              id: user.id,
-              isOnline,
-              img,
-              username,
-              email,
-              creationTime: formatDate(creationTime.toDate().toLocaleString()),
-              lastSeen: formatDate(lastSeen.toDate().toLocaleString()),
-              bio,
-            });
-          }
-        });
-        callback(users);
-      });
+      const querySnapshot = await getDocs(q);
+      const users: userType[] = [];
+      for (const doc of querySnapshot.docs) {
+        if (doc.id !== auth.currentUser?.uid) {
+          const {
+            isOnline,
+            img,
+            username,
+            email,
+            creationTime,
+            lastSeen,
+            bio,
+          } = doc.data();
+          users.push({
+            id: doc.id,
+            isOnline,
+            img,
+            username,
+            email,
+            creationTime: formatDate(creationTime.toDate().toLocaleString()),
+            lastSeen: formatDate(lastSeen.toDate().toLocaleString()),
+            bio,
+          });
+        }
+      }
+      return users;
     } catch (error) {
       CatchErr(error);
       console.error(error);
+      return;
     }
   }
 };

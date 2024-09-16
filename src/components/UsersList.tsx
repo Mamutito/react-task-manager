@@ -25,41 +25,6 @@ const UsersList: React.FC<Props> = ({ loading, users }) => {
             otherUser
             className="px-5 py-5 hover:bg-gray-200 border-b border-gray-200"
             onClick={handleStartChat}
-          />{" "}
-          <UserProfileHeader
-            user={user}
-            key={user.id}
-            otherUser
-            className="px-5 py-5 hover:bg-gray-200 border-b border-gray-200"
-            onClick={handleStartChat}
-          />{" "}
-          <UserProfileHeader
-            user={user}
-            key={user.id}
-            otherUser
-            className="px-5 py-5 hover:bg-gray-200 border-b border-gray-200"
-            onClick={handleStartChat}
-          />{" "}
-          <UserProfileHeader
-            user={user}
-            key={user.id}
-            otherUser
-            className="px-5 py-5 hover:bg-gray-200 border-b border-gray-200"
-            onClick={handleStartChat}
-          />{" "}
-          <UserProfileHeader
-            user={user}
-            key={user.id}
-            otherUser
-            className="px-5 py-5 hover:bg-gray-200 border-b border-gray-200"
-            onClick={handleStartChat}
-          />{" "}
-          <UserProfileHeader
-            user={user}
-            key={user.id}
-            otherUser
-            className="px-5 py-5 hover:bg-gray-200 border-b border-gray-200"
-            onClick={handleStartChat}
           />
         </>
       ))}

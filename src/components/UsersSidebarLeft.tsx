@@ -3,27 +3,26 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setChatTab } from "../store/chatSlice";
 import Chats from "./Chats";
 import UsersList from "./UsersList";
-import { userType } from "../types";
 import { FB_getAllUsers } from "../backend/authQueries";
 import { setUsers } from "../store/usersSlice";
 
 const UsersSidebarLeft = () => {
   const isChatTab = useAppSelector((state) => state.chat.isChatTab);
+  const users = useAppSelector((state) => state.users.users);
   const dispatch = useAppDispatch();
-  const [usersState, setUsersState] = useState<userType[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = FB_getAllUsers(setUsersState);
-    dispatch(setUsers(usersState));
-    setLoading(false);
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
+    const getAllUsers = async () => {
+      const usersList = await FB_getAllUsers();
+      if (usersList) {
+        dispatch(setUsers(usersList));
       }
     };
-  }, [dispatch, usersState]);
+
+    getAllUsers();
+    setLoading(false);
+  }, [dispatch]);
 
   return (
     <aside
@@ -51,12 +50,8 @@ const UsersSidebarLeft = () => {
           Users
         </p>
       </header>
-      <section className="py-2 max-h-full overflow-scroll">
-        {isChatTab ? (
-          <Chats />
-        ) : (
-          <UsersList loading={loading} users={usersState} />
-        )}
+      <section className="py-2 max-h-full overflow-y-auto">
+        {isChatTab ? <Chats /> : <UsersList loading={loading} users={users} />}
       </section>
     </aside>
   );
